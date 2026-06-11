@@ -283,7 +283,7 @@ export const ProfileLogs: React.FC = () => {
       {/* Header */}
       <div className="border-b border-vintage-sepia-200 pb-4">
         <h1 className="font-serif font-extrabold text-3xl text-vintage-sepia-900 flex items-center gap-2">
-          <User className="text-vintage-gold" /> Hồ sơ &amp; Quản trị hệ thống
+          <User className="text-vintage-gold" /> Quản trị hệ thống
         </h1>
         <p className="text-sm text-warm-gray-700 mt-1">
           Cấu hình tài khoản, phân quyền và nhật ký hoạt động hệ thống.
