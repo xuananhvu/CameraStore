@@ -382,7 +382,7 @@ export const Reporting: React.FC = () => {
         <p className="text-center py-8 text-xs text-warm-gray-700 italic">Không tìm thấy đơn hàng nào trong hệ thống.</p>
       ) : (
         <div className="bg-vintage-sepia-100 border border-vintage-sepia-200 rounded-xl overflow-x-auto shadow-sm">
-          <table className="w-full text-left text-[11px] border-collapse min-w-[1200px]">
+          <table className="w-full text-left text-[11px] border-collapse min-w-[1600px]">
             <thead>
               <tr className="bg-vintage-sepia-900/10 border-b border-vintage-sepia-200 text-vintage-sepia-900 font-bold uppercase tracking-wider">
                 <th className="p-3 w-24">Hình thức</th>
