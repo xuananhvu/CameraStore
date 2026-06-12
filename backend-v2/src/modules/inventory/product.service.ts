@@ -393,8 +393,20 @@ export class ProductService {
         // Remove surplus equipments
         const diff = currentCount - targetStock;
         
-        // Find equipments that are not rented (AVAILABLE, MAINTENANCE, DAMAGED) to delete first
-        const availableEquips = (currentEquips || []).filter(e => e.status !== 'RENTED');
+        // Find equipments that are referenced by booking_equipments to avoid FOREIGN KEY violations (ON DELETE RESTRICT)
+        const { data: bookedLinks, error: linkErr } = await supabaseAdmin
+          .from('booking_equipments')
+          .select('equipment_id')
+          .in('equipment_id', currentEquips.map(e => e.id));
+
+        if (linkErr) throw linkErr;
+
+        const bookedIds = new Set((bookedLinks || []).map(b => b.equipment_id));
+
+        // Find equipments that are not rented and NOT referenced by any bookings
+        const availableEquips = (currentEquips || []).filter(
+          e => e.status !== 'RENTED' && !bookedIds.has(e.id)
+        );
         const idsToDelete = availableEquips.slice(0, diff).map(e => e.id);
         
         if (idsToDelete.length > 0) {
