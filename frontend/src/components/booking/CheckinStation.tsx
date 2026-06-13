@@ -198,6 +198,24 @@ export const CheckinStation: React.FC = () => {
     }
   };
 
+  const toLocalTimeStr = (isoString: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    try {
+      const formatter = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      return formatter.format(date);
+    } catch {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+  };
+
   const getTodayStr = () => {
     const now = new Date();
     try {
@@ -280,17 +298,22 @@ export const CheckinStation: React.FC = () => {
                     bookingId === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30' : ''
                   }`}
                 >
-                  <div>
-                    <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                    <p className="text-[10px] text-warm-gray-600 font-medium">
+                  <div className="flex-1 min-w-0 pr-2">
+                    <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                    <p className="text-[10px] text-warm-gray-600 font-medium truncate">
                       {b.equipment?.products?.brand} {b.equipment?.products?.name}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                    <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                      {toLocalTimeStr(b.start_date)}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0 pl-2">
                     <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded uppercase">
                       {b.status}
                     </span>
-                    <p className="text-[9px] text-warm-gray-500 mt-1 font-mono">Hạn trả: {b.end_date}</p>
+                    <p className="text-[9px] text-warm-gray-500 mt-1 font-mono">{toLocalDateStr(b.start_date)}</p>
                   </div>
                 </div>
               ))}
@@ -311,7 +334,7 @@ export const CheckinStation: React.FC = () => {
           ) : (
             <div className="divide-y divide-vintage-sepia-100 max-h-60 overflow-y-auto pr-1">
               {todayReturnList.map((b: any) => {
-                const isOverdue = b.end_date < todayStr;
+                const isOverdue = toLocalDateStr(b.end_date) < todayStr;
                 return (
                   <div 
                     key={b.id} 
@@ -320,19 +343,24 @@ export const CheckinStation: React.FC = () => {
                       bookingId === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30' : ''
                     }`}
                   >
-                    <div>
-                      <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                      <p className="text-[10px] text-warm-gray-600 font-medium">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                      <p className="text-[10px] text-warm-gray-600 font-medium truncate">
                         {b.equipment?.products?.brand} {b.equipment?.products?.name}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                      <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                        {toLocalTimeStr(b.end_date)}
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0 pl-2">
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${
                         isOverdue ? 'bg-red-150 text-film-red animate-pulse' : 'bg-vintage-gold/15 text-vintage-gold'
                       }`}>
                         {isOverdue ? 'Trễ hạn' : 'Đang thuê'}
                       </span>
-                      <p className="text-[9px] text-warm-gray-500 mt-1 font-mono">Hạn trả: {b.end_date}</p>
+                      <p className="text-[9px] text-warm-gray-500 mt-1 font-mono">{toLocalDateStr(b.end_date)}</p>
                     </div>
                   </div>
                 );
