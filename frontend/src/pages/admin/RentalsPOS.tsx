@@ -104,6 +104,24 @@ export const RentalsPOS: React.FC = () => {
     }
   };
 
+  const toLocalTimeStr = (isoString: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    try {
+      const formatter = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      return formatter.format(date);
+    } catch {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+  };
+
   const getTodayStr = () => {
     const now = new Date();
     try {
@@ -598,17 +616,22 @@ export const RentalsPOS: React.FC = () => {
                               bookingIdInput === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30 font-bold' : ''
                             }`}
                           >
-                            <div>
-                              <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                              <p className="text-[10px] text-warm-gray-600">
+                            <div className="flex-1 min-w-0 pr-2">
+                              <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                              <p className="text-[10px] text-warm-gray-600 truncate">
                                 {b.equipment?.products?.name || 'Mẫu thiết bị'}
                               </p>
                             </div>
-                            <div className="text-right">
+                            <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                              <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                                {toLocalTimeStr(b.start_date)}
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2">
                               <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded uppercase">
                                 {b.status}
                               </span>
-                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">Hạn: {toLocalDateStr(b.end_date)}</p>
+                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">{toLocalDateStr(b.start_date)}</p>
                             </div>
                           </div>
                         ))}
@@ -631,17 +654,22 @@ export const RentalsPOS: React.FC = () => {
                               bookingIdInput === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30 font-bold' : ''
                             }`}
                           >
-                            <div>
-                              <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                              <p className="text-[10px] text-warm-gray-600">
+                            <div className="flex-1 min-w-0 pr-2">
+                              <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                              <p className="text-[10px] text-warm-gray-600 truncate">
                                 {b.equipment?.products?.name || 'Mẫu thiết bị'}
                               </p>
                             </div>
-                            <div className="text-right">
+                            <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                              <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                                {toLocalTimeStr(b.start_date)}
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2">
                               <span className="text-[9px] bg-blue-150 text-blue-800 font-bold px-1.5 py-0.5 rounded uppercase">
-                                Hẹn: {toLocalDateStr(b.start_date)}
+                                Sắp tới
                               </span>
-                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">Hạn: {toLocalDateStr(b.end_date)}</p>
+                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">{toLocalDateStr(b.start_date)}</p>
                             </div>
                           </div>
                         ))}
@@ -679,19 +707,24 @@ export const RentalsPOS: React.FC = () => {
                                 bookingIdInput === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30 font-bold' : ''
                               }`}
                             >
-                              <div>
-                                <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                                <p className="text-[10px] text-warm-gray-600">
+                              <div className="flex-1 min-w-0 pr-2">
+                                <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                                <p className="text-[10px] text-warm-gray-600 truncate">
                                   {b.equipment?.products?.name || 'Mẫu thiết bị'}
                                 </p>
                               </div>
-                              <div className="text-right">
+                              <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                                <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                                  {toLocalTimeStr(b.end_date)}
+                                </p>
+                              </div>
+                              <div className="text-right flex-shrink-0 pl-2">
                                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
                                   isOverdue ? 'bg-red-150 text-film-red animate-pulse' : 'bg-vintage-gold/15 text-vintage-gold'
                                 }`}>
                                   {isOverdue ? 'Trễ hạn' : 'Đang thuê'}
                                 </span>
-                                <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">Hạn: {toLocalDateStr(b.end_date)}</p>
+                                <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">{toLocalDateStr(b.end_date)}</p>
                               </div>
                             </div>
                           );
@@ -715,17 +748,22 @@ export const RentalsPOS: React.FC = () => {
                               bookingIdInput === b.id ? 'bg-vintage-sepia-100/70 border border-vintage-gold/30 font-bold' : ''
                             }`}
                           >
-                            <div>
-                              <p className="font-bold text-vintage-sepia-900">{b.profiles?.full_name || 'Khách thuê'}</p>
-                              <p className="text-[10px] text-warm-gray-600">
+                            <div className="flex-1 min-w-0 pr-2">
+                              <p className="font-bold text-vintage-sepia-900 truncate">{b.profiles?.full_name || 'Khách thuê'}</p>
+                              <p className="text-[10px] text-warm-gray-600 truncate">
                                 {b.equipment?.products?.name || 'Mẫu thiết bị'}
                               </p>
                             </div>
-                            <div className="text-right">
+                            <div className="px-3 text-center border-x border-vintage-sepia-200/40">
+                              <p className="text-base font-extrabold text-vintage-sepia-900 font-mono">
+                                {toLocalTimeStr(b.end_date)}
+                              </p>
+                            </div>
+                            <div className="text-right flex-shrink-0 pl-2">
                               <span className="text-[9px] bg-blue-150 text-blue-800 font-bold px-1.5 py-0.5 rounded uppercase">
                                 Đang thuê
                               </span>
-                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">Hạn: {toLocalDateStr(b.end_date)}</p>
+                              <p className="text-[9px] text-warm-gray-500 font-mono mt-0.5">{toLocalDateStr(b.end_date)}</p>
                             </div>
                           </div>
                         ))}
