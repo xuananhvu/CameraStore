@@ -53,3 +53,6 @@ pnpm-debug.log*
 # Deployment
 .vercel
 .render
+
+# Duplicate / Backup directories
+CameraStore-main/
