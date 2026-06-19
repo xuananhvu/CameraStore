@@ -69,8 +69,21 @@ export async function requireAuth(
     if (mockUsers[token]) {
       const mUser = mockUsers[token];
       try {
+        const { data: existingUser } = await supabaseAdmin.from('users').select('employee_id').eq('id', mUser.id).single();
+        let empId = existingUser?.employee_id;
+        
+        if (!empId) {
+          const { data: maxEmpIdData } = await supabaseAdmin
+            .from('users')
+            .select('employee_id')
+            .order('employee_id', { ascending: false })
+            .limit(1);
+          empId = (maxEmpIdData && maxEmpIdData.length > 0 && maxEmpIdData[0].employee_id) ? maxEmpIdData[0].employee_id + 1 : 1;
+        }
+
         const { error: upsertErr } = await supabaseAdmin.from('users').upsert({
           id: mUser.id,
+          employee_id: empId,
           role: mUser.role,
           first_name: mUser.firstName,
           last_name: mUser.lastName,
@@ -121,10 +134,18 @@ export async function requireAuth(
       const firstName = userMeta.first_name || 'Staff';
       const lastName = userMeta.last_name || user.id.substring(0, 6);
 
+      const { data: maxEmpIdData } = await supabaseAdmin
+        .from('users')
+        .select('employee_id')
+        .order('employee_id', { ascending: false })
+        .limit(1);
+      const nextEmpId = (maxEmpIdData && maxEmpIdData.length > 0 && maxEmpIdData[0].employee_id) ? maxEmpIdData[0].employee_id + 1 : 1;
+
       const { data: newProfile, error: insertError } = await supabaseAdmin
         .from('users')
         .insert({
           id: user.id,
+          employee_id: nextEmpId,
           role: newRole,
           first_name: firstName,
           last_name: lastName,

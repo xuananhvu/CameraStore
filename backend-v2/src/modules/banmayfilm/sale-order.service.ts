@@ -104,7 +104,7 @@ export class SaleOrderService {
       .select(`
         *,
         sale_products(name, brand, category_name),
-        sale_customers(full_name, phone, address),
+        customers(first_name, last_name, phone_number, address),
         users(first_name, last_name, staff_code)
       `);
 
@@ -123,6 +123,17 @@ export class SaleOrderService {
     
     return (data || []).map((order: any) => {
       const copy = { ...order };
+      if (copy.customers) {
+        copy.sale_customers = {
+          full_name: `${copy.customers.first_name || ''} ${copy.customers.last_name || ''}`.trim() || 'Khách hàng',
+          phone: copy.customers.phone_number || '',
+          address: copy.customers.address || ''
+        };
+        delete copy.customers;
+      } else {
+        copy.sale_customers = null;
+      }
+      
       if (copy.users) {
         copy.sale_employees = {
           full_name: `${copy.users.first_name || ''} ${copy.users.last_name || ''}`.trim() || 'Staff',

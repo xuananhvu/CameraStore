@@ -17,9 +17,16 @@ export interface CameraModelFilters {
 export class CameraModelService {
   static async listCameraModels(filters: CameraModelFilters) {
     let query = supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .select(`
-        *,
+        id,
+        catgories_id:categories_id,
+        model_name:name,
+        rent_price_per_day,
+        deposit_amount,
+        is_active,
+        sale_price:price,
+        brand,
         categories (
           id,
           name
@@ -28,7 +35,7 @@ export class CameraModelService {
       .order('id', { ascending: false });
 
     if (filters.categoryId) {
-      query = query.eq('catgories_id', filters.categoryId);
+      query = query.eq('categories_id', filters.categoryId);
     }
     if (filters.isActive !== undefined) {
       query = query.eq('is_active', filters.isActive);
@@ -41,9 +48,16 @@ export class CameraModelService {
 
   static async getCameraModelById(id: string | number) {
     const { data, error } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .select(`
-        *,
+        id,
+        catgories_id:categories_id,
+        model_name:name,
+        rent_price_per_day,
+        deposit_amount,
+        is_active,
+        sale_price:price,
+        brand,
         categories (
           id,
           name
@@ -63,16 +77,26 @@ export class CameraModelService {
 
   static async createCameraModel(payload: CameraModelPayload, staffId: string) {
     const { data, error } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .insert({
-        catgories_id: payload.categoryId || null,
-        model_name: payload.modelName,
+        categories_id: payload.categoryId || null,
+        name: payload.modelName,
+        brand: '',
         rent_price_per_day: payload.rentPricePerDay,
         deposit_amount: payload.depositAmount,
-        sale_price: payload.salePrice || 0,
+        price: payload.salePrice || 0,
         is_active: payload.isActive !== undefined ? payload.isActive : true
       })
-      .select()
+      .select(`
+        id,
+        catgories_id:categories_id,
+        model_name:name,
+        rent_price_per_day,
+        deposit_amount,
+        is_active,
+        sale_price:price,
+        brand
+      `)
       .single();
 
     if (error) throw error;
@@ -81,7 +105,7 @@ export class CameraModelService {
 
   static async updateCameraModel(id: string | number, updates: Partial<CameraModelPayload>, staffId: string) {
     const { data: oldModel, error: findErr } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .select('*')
       .eq('id', id)
       .single();
@@ -94,18 +118,27 @@ export class CameraModelService {
     }
 
     const mappedUpdates: Record<string, any> = {};
-    if (updates.categoryId !== undefined) mappedUpdates.catgories_id = updates.categoryId;
-    if (updates.modelName !== undefined) mappedUpdates.model_name = updates.modelName;
+    if (updates.categoryId !== undefined) mappedUpdates.categories_id = updates.categoryId;
+    if (updates.modelName !== undefined) mappedUpdates.name = updates.modelName;
     if (updates.rentPricePerDay !== undefined) mappedUpdates.rent_price_per_day = updates.rentPricePerDay;
     if (updates.depositAmount !== undefined) mappedUpdates.deposit_amount = updates.depositAmount;
-    if (updates.salePrice !== undefined) mappedUpdates.sale_price = updates.salePrice;
+    if (updates.salePrice !== undefined) mappedUpdates.price = updates.salePrice;
     if (updates.isActive !== undefined) mappedUpdates.is_active = updates.isActive;
 
     const { data, error } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .update(mappedUpdates)
       .eq('id', id)
-      .select()
+      .select(`
+        id,
+        catgories_id:categories_id,
+        model_name:name,
+        rent_price_per_day,
+        deposit_amount,
+        is_active,
+        sale_price:price,
+        brand
+      `)
       .single();
 
     if (error) throw error;
@@ -114,7 +147,7 @@ export class CameraModelService {
 
   static async deleteCameraModel(id: string | number, staffId: string) {
     const { data: model, error: findErr } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .select('*')
       .eq('id', id)
       .single();
@@ -138,7 +171,7 @@ export class CameraModelService {
     }
 
     const { error: delErr } = await supabaseAdmin
-      .from('camera_models')
+      .from('products')
       .delete()
       .eq('id', id);
 

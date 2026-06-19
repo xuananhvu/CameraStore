@@ -22,9 +22,20 @@ export class CategoryService {
   }
 
   static async createCategory(payload: CategoryPayload, staffId: string) {
+    // 1. Lấy ID lớn nhất hiện tại để tự động tăng (khắc phục lỗi thiếu sequence)
+    const { data: maxData } = await supabaseAdmin
+      .from('categories')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1);
+      
+    const nextId = (maxData && maxData.length > 0) ? maxData[0].id + 1 : 1;
+
+    // 2. Insert với ID đã tính
     const { data, error } = await supabaseAdmin
       .from('categories')
       .insert({
+        id: nextId,
         name: payload.name
       })
       .select()

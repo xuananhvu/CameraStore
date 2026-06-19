@@ -135,9 +135,9 @@ export class ReportingService {
         booking_id,
         equipments (
           product_id,
-          camera_models (
+          products (
             id,
-            model_name
+            name
           )
         )
       `);
@@ -148,11 +148,14 @@ export class ReportingService {
 
     (bookingEqs || []).forEach((be: any) => {
       const eq = be.equipments;
-      if (eq && eq.camera_models) {
-        const model = eq.camera_models;
+      if (eq && eq.products) {
+        const model = eq.products;
         if (!freqMap[model.id]) {
           freqMap[model.id] = {
-            model,
+            model: {
+              id: model.id,
+              model_name: model.name
+            },
             count: 0
           };
         }
@@ -266,8 +269,8 @@ export class ReportingService {
         ),
         booking_equipments (
           equipments (
-            camera_models (
-              model_name,
+            products (
+              name,
               brand
             )
           )
@@ -321,8 +324,8 @@ export class ReportingService {
 
       // Find equipment & model name
       const equipLink = booking.booking_equipments?.[0];
-      const model = (equipLink?.equipments as any)?.camera_models;
-      const productName = model ? `${model.brand || ''} ${model.model_name || ''}`.trim() : 'Thiết bị thuê';
+      const model = (equipLink?.equipments as any)?.products;
+      const productName = model ? `${model.brand || ''} ${model.name || ''}`.trim() : 'Thiết bị thuê';
 
       Object.keys(dailyMap).forEach(dateKey => {
         const currentDate = new Date(dateKey);
@@ -384,8 +387,8 @@ export class ReportingService {
         ),
         booking_equipments (
           equipments (
-            camera_models (
-              model_name
+            products (
+              name
             )
           )
         ),
@@ -462,7 +465,7 @@ export class ReportingService {
       orderItems = orderItemsData || [];
       // Keep bookings as is
       (bookingsData || []).forEach((b: any) => {
-        const equipName = b.booking_equipments?.[0]?.equipments?.camera_models?.model_name || 'Thiết bị thuê';
+        const equipName = b.booking_equipments?.[0]?.equipments?.products?.name || 'Thiết bị thuê';
         history.push({
           id: `booking-${b.id}`,
           dbId: b.id,
@@ -500,7 +503,7 @@ export class ReportingService {
       if (bookingsErr) throw bookingsErr;
 
       (bookingsData || []).forEach((b: any) => {
-        const equipName = b.booking_equipments?.[0]?.equipments?.camera_models?.model_name || 'Thiết bị thuê';
+        const equipName = b.booking_equipments?.[0]?.equipments?.products?.name || 'Thiết bị thuê';
         history.push({
           id: `booking-${b.id}`,
           dbId: b.id,
@@ -587,8 +590,8 @@ export class ReportingService {
         booking_status,
         booking_equipments (
           equipments (
-            camera_models (
-              model_name
+            products (
+              name
             )
           )
         )
@@ -649,7 +652,7 @@ export class ReportingService {
       const rev = Number(b.total_rent_fee || 0);
       totalRevenue += rev;
 
-      const modelName = b.booking_equipments?.[0]?.equipments?.camera_models?.model_name || 'Thiết bị thuê khác';
+      const modelName = b.booking_equipments?.[0]?.equipments?.products?.name || 'Thiết bị thuê khác';
       revenueByModel[modelName] = (revenueByModel[modelName] || 0) + rev;
     });
 
